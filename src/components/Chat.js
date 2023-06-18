@@ -129,9 +129,9 @@ export default function Chat(props) {
                   <button type="button" className="btn btn-primary">Back</button>
                   <h1>Chatname</h1>
                   <div>
-                    <button onClick={toggle_colormode} type="button" className="btn btn-primary">Color mode</button>
-                    <button onClick={logout} type="button" className="btn btn-primary">Logout</button>
-                    <button onClick={deregister} type="button" className="btn btn-primary">Deregister</button>
+                    <button onClick={toggle_colormode} type="button" className="btn btn-info">Color mode</button>
+                    <button onClick={logout} type="button" className="btn btn-warnign">Logout</button>
+                    <button onClick={deregister} type="button" className="btn btn-danger">Deregister</button>
                   </div> 
               </div>
 
