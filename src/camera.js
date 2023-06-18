@@ -18,16 +18,14 @@ export default class Camera{
             });
     }
 
-    takePhoto() {
+        takePhoto() {
         // Create a canvcas to draw on
-        let canvas =
-            document.createElement('canvas');
+        let canvas = document.createElement('canvas');
         canvas.setAttribute('width', 640);
         canvas.setAttribute('height', 480);
         let context = canvas.getContext('2d');
         // Copy image from video to canvas
-        context.drawImage(this.videoNode, 0, 0,
-            canvas.width, canvas.height);
+        context.drawImage(this.videoNode, 0, 0, canvas.width, canvas.height);
         // Convert image to data string
         this.photo = context.canvas.toDataURL();
         // Release resources
@@ -37,7 +35,6 @@ export default class Camera{
     }
 
     switchOff() {
-        console.log(this.videoNode);
         this.videoNode.pause();
         this.stream.getTracks()[0].stop();
     }

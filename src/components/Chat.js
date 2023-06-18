@@ -2,11 +2,9 @@ import React, {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import ChatService from "../services/chat.service"
 import Alert from 'react-bootstrap/Alert';
-import CameraModal from "./CameraModal";
-import Camera from "../camera";
 
 export default function Chat(props) {
-    let camera;
+
     const[foto,setFoto] = React.useState("");
 
     const navigate = useNavigate();
@@ -14,10 +12,6 @@ export default function Chat(props) {
     const[sendMessage,setSendMessage] = React.useState("")
     const[user,setUser] = React.useState({userid:""});
 
-    // Modale
-    const [showCamera, setShowCamera] = React.useState(false);
-    const handleShowCameraModalClose = () => {setShowCamera(false);} ;
-    const handleShowCameraModal = () => setShowCamera(true);
 
     useEffect(()=> {
         const userString = localStorage.getItem('user');
@@ -76,26 +70,8 @@ export default function Chat(props) {
         setSendMessage(evt.target.value);
     }
 
-    useEffect(()=> {
-        if ('mediaDevices' in navigator && document.getElementById("vid") !== null) {
-            camera = new Camera(document.getElementById("vid"));
-            camera.switchOn();
-        }
-    },[handleShowCameraModal]);
-
-    function takepic(){
-        let cam = document.getElementById("vid");
-        cam.remove();
-
-        let foto = document.getElementById("foto");
-        foto.src = camera.takePhoto();
-        setFoto((foto.src));
-    }
-
-    function switchCamOff(){
-        handleShowCameraModalClose();
-        camera.switchOff();
-
+    function navigateCamera(){
+        navigate("/camera");
     }
 
     return (
@@ -136,7 +112,7 @@ export default function Chat(props) {
                 <div id="chat"></div>
                 <form  style={{position:"absolute",bottom:0}} className="p-2 w-100">
                     <div className="input-group mb-3">
-                        <button onClick={handleShowCameraModal} className="btn btn-primary" type="button">Pic</button>
+                        <button onClick={navigateCamera} className="btn btn-primary" type="button">Pic</button>
                         <input type="text"
                            className="form-control"
                            placeholder="Type Message"
@@ -149,7 +125,6 @@ export default function Chat(props) {
                         </div>
                     </div>
                 </form>
-            <CameraModal show={showCamera} switchCamOff={switchCamOff} sendMessageToGroup={sendMessageToGroup} handleClose={handleShowCameraModalClose} takepic={takepic}></CameraModal>
         </>
     )
 }
