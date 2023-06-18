@@ -43,6 +43,7 @@ export default function Login(props) {
                 localStorage.setItem('user', JSON.stringify(login));
             }
             sessionStorage.setItem("token", response.data.token);
+            sessionStorage.setItem("userhash", response.data.hash)
             navigate("/chat");
         }).catch((error)=> {
             console.log(error.response.statusText);

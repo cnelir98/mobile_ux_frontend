@@ -16,8 +16,8 @@ class ChatService {
         return axios.post(API_URL, {request:"register",userid:register.userid,password:register.password,nickname:register.nickname,fullname:register.fullname})
     }
 
-    deregister(){
-
+    deregister(token){
+        return axios.post(API_URL, {request: "deregister", token: token})
     }
 
     async fetch_photo(token,photoid){
