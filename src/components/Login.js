@@ -2,6 +2,7 @@ import React, {useEffect} from "react";
 import ChatService from "../services/chat.service"
 import {useNavigate} from "react-router-dom";
 import Form from 'react-bootstrap/Form';
+import * as Icon from "react-bootstrap-icons";
 
 export default function Login(props) {
 
@@ -47,7 +48,7 @@ export default function Login(props) {
             navigate("/chat");
         }).catch((error)=> {
             console.log(error.response.statusText);
-            setErrorMsg(error.response.statusText);
+            setErrorMsg("Login nicht Erfolgreich!");
         })
     }
 
@@ -56,8 +57,14 @@ export default function Login(props) {
     }
     return (
         <>
-                <form className="p-2">
-                    <h1>Login</h1>
+            <div className="d-flex justify-content-center mt-5"><Icon.People size={50}/></div>
+            <div className="d-flex justify-content-center h-100 mt-2" >
+                <form  style={{
+                    width:"75%",
+                    backgroundColor:"darkgray",
+                    borderRadius: "10px", // runde Ecken
+                    boxShadow: "0px 0px 10px rgba(0,0,0,0.1)" // leichter Schatten
+                }}  className="p-2">
                     <div className="form-group mt-3">
                         <label>HSE Account</label>
                         <input type=""
@@ -88,10 +95,11 @@ export default function Login(props) {
                         </Form>
                     </div>
                     <button onClick={callLogin} type="button" className="w-100 btn btn-primary mt-4">Login</button>
-                    <div>{errorMsg}</div>
+                    <div className="d-flex justify-content-center" >{errorMsg}</div>
                     <div className="mt-4 d-flex justify-content-center">or</div>
                     <button onClick={redirectRegister} type="button" className="w-100 btn btn-primary mt-4">Register</button>
                 </form>
+            </div>
         </>
     )
 }

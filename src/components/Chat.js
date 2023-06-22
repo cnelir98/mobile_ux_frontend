@@ -8,11 +8,14 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import dayjs from 'dayjs';
 import {format} from "date-fns";
+import * as Icon from 'react-bootstrap-icons';
 
 export default function Chat(props) {
     const [fontSize, setFontSize] = React.useState(16);
 
     const[foto,setFoto] = React.useState("");
+
+    const[showDropdown,setShowDropdown] = React.useState(false);
 
     const navigate = useNavigate();
     const[messages,setMessages] = React.useState([{data:{}}])
@@ -27,7 +30,7 @@ export default function Chat(props) {
 
 
     const messageEnd = useRef(null);
-    const [colorMode, setColorMode] = React.useState('dark')
+    const [colorMode, setColorMode] = React.useState('light')
 
     useEffect(()=> {
         //const userString = localStorage.getItem('user');
@@ -184,50 +187,55 @@ export default function Chat(props) {
         }
     }, [speech]);
 
-    function changeTextSize(event){
+    function changeFontSize(event){
         setFontSize(event.target.value);
         fetch_messages();
+    }
+
+    function handleSelect(event){
+        console.log(event);
+    }
+
+    function toggleDropDown(event){
+        console.log("MOIn");
+        event.preventDefault();
+        setShowDropdown(!showDropdown)
     }
 
     return (
         <>
         <div data-bs-theme={colorMode}>
-              <div id="header" className="p-2 mt-2 d-flex justify-content-between">
-                  <button type="button" className="btn btn-primary">Back</button>
-                  <h1>Chatname</h1>
-                  <div>
-                    <button onClick={toggle_colormode} type="button" className="btn btn-info">Color mode</button>
-                    <DropdownButton
-                        as={ButtonGroup}
-                        key="test"
-                        
-                        title="test"
-                    >
-                        <Dropdown.Item eventKey="1">Action</Dropdown.Item>
-                        <Dropdown.Item eventKey="2">Another action</Dropdown.Item>
-                        <Dropdown.Item eventKey="3" active>
-                        Active Item
-                        </Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item eventKey="4">Separated link</Dropdown.Item>
-                    </DropdownButton>
-                    <button onClick={logout} type="button" className="btn btn-warnign">Logout</button>
-                    <button onClick={deregister} type="button" className="btn btn-danger">Deregister</button>
 
-                  </div>
-              </div>
+            <nav className="navbar navbar-dark bg-primary">
+                <button onClick={logout} type="button" className="btn btn-warnign"> <Icon.ArrowBarLeft size={30} /></button>
+                <div className="d-flex flex-row">
+
+                    <div>
+                        <label>Schriftgröße ändern</label>
+                        <select value={fontSize} onChange={changeFontSize} className="form-select mb-3" aria-label="Default select example">
+                            <option  value={10}>Klein</option>
+                            <option  value={16}>Mittel</option>
+                            <option  value={22}>Groß</option>
+                        </select>
+                    </div>
+                    <button style={{backgroundColor:'transparent',border: 'none', boxShadow: 'none'}} onClick={toggle_colormode} type="button" className="btn btn-info">
+                        {colorMode==="dark" && <Icon.SunFill color="white" size={30} />}
+                        {colorMode !=="dark" && <Icon.MoonFill color="white" size={30} />}
+
+                    </button>
+                    <button style={{backgroundColor:'transparent',border: 'none', boxShadow: 'none'}} onClick={deregister} type="button" className="btn btn-danger"> <Icon.TrashFill color="red" size={30} /></button>
+                </div>
+            </nav>
 
 
-            <div className="d-flex flex-column justify-content-center mt-2">
-            <button  onClick={fetch_messages} className="btn btn-primary" type="button">Fetch Messages</button>
-                <label>Schriftgröße ändern</label>
-                <select value={fontSize} onChange={changeTextSize} className="form-select mb-3" aria-label="Default select example">
-                    <option  value={10}>Klein</option>
-                    <option  value={16}>Mittel</option>
-                    <option  value={22}>Groß</option>
-
-                </select>
-            </div>
+    <div className="d-flex justify-content-center mt-4 mb-4">
+            <button  style={{
+                borderRadius: "50%",
+                width: "60px",
+                height: "60px",
+                backgroundColor: "lightgrey", // This makes the inside of the ring transparent.
+            }} onClick={fetch_messages} className="btn btn-primary" type="button"><Icon.ArrowClockwise color="blue" size={30}/></button>
+    </div>
 
             <div className="p-2 mt-1" id="messages"  style={{maxHeight:"600px", overflow:"scroll"}}>
             {messages?.data?.map((message) => (
@@ -240,7 +248,7 @@ export default function Chat(props) {
                                  <br />
                                  {message.photoid && <img id={message.id} src="" alt="pic"/>}
                              </div>
-                             <button style={{ alignSelf: 'center' }} onClick={() =>  textToSpeech(message.text)} className="btn btn-primary" type="button">lol</button>
+                             <button style={{ alignSelf: 'center' }} onClick={() =>  textToSpeech(message.text)} className="btn btn-primary" type="button"><Icon.VolumeUp/></button>
                          </Alert>
                     </div>}
                     {message.userhash !== sessionStorage.getItem('userhash')&&  <div>
@@ -251,7 +259,7 @@ export default function Chat(props) {
                                     <br />
                                     {message.photoid && <img id={message.id} src="" alt="pic"/>}
                                 </div>
-                                <button style={{ alignSelf: 'center' }} onClick={() =>  textToSpeech(message.text)} className="btn btn-primary" type="button">lol</button>
+                                <button style={{ alignSelf: 'center' }} onClick={() =>  textToSpeech(message.text)} className="btn btn-primary" type="button"><Icon.VolumeUp/></button>
                             </Alert>
                     </div>}
 
@@ -264,7 +272,7 @@ export default function Chat(props) {
                 <div id="chat"></div>
                 <form  style={{position:"absolute",bottom:0}} className="p-2 w-100">
                     <div className="input-group mb-1">
-                        <button onClick={navigateCamera} className="btn btn-primary" type="button">Pic</button>
+                        <button onClick={navigateCamera} className="btn btn-primary" type="button"><Icon.CameraFill/></button>
                         <input type="text"
                            className="form-control"
                            placeholder="Type Message"
@@ -273,9 +281,8 @@ export default function Chat(props) {
                            onChange={handleChangeMessage}
                         />
                         <div className="input-group-append">
-                            <button onClick={toggleSpeech} type="button" className="btn btn-danger">Mic</button>
-                            <button onClick={sendMessageToGroup} className="btn btn-primary" type="button">Send</button>
-                            <button onClick={textToSpeech} className="btn btn-primary" type="button">text</button>
+                            <button onClick={toggleSpeech} type="button" className="btn btn-primary"><Icon.MicFill/></button>
+                            <button onClick={sendMessageToGroup} className="btn btn-primary" type="button"><Icon.SendFill/></button>
                         </div>
                     </div>
                 </form>
