@@ -4,14 +4,22 @@ import { useRef } from 'react';
 import ChatService from "../services/chat.service"
 import Alert from 'react-bootstrap/Alert';
 import dayjs from 'dayjs';
+import {format} from "date-fns";
 
 export default function Chat(props) {
+    const [fontSize, setFontSize] = React.useState(16);
 
     const[foto,setFoto] = React.useState("");
 
     const navigate = useNavigate();
     const[messages,setMessages] = React.useState([{data:{}}])
     const[sendMessage,setSendMessage] = React.useState("")
+
+    const [speech, setSpeech] = React.useState(false)
+    const recognitionRef = useRef(null);
+
+    const textToSpeechRef = useRef(null);
+
     //const[user,setUser] = React.useState({userid:""});
 
 
@@ -45,7 +53,7 @@ export default function Chat(props) {
                     else {
                         msg.time = dayjs(msg.time).format('DD.MM.YYYY hh:mm a')
                     }
-                    
+
                     console.log(msg)
                 }
                 if (msg.photoid) {
@@ -117,9 +125,65 @@ export default function Chat(props) {
         else {
             setColorMode('light');
             document.body.className = "bg-light text-dark"
-            
+
         }
-        
+
+    }
+
+
+    // Text to speech
+    useEffect(()=> {
+        if(!('speechSynthesis' in window)){
+            console.log('speechSynthesis wird von Ihrem Browser nicht unterstützt');
+            return
+        }
+        textToSpeechRef.current = window.speechSynthesis;
+
+    },[]);
+
+    function textToSpeech(message){
+        const utterThis = new SpeechSynthesisUtterance(message);
+        textToSpeechRef.current.speak(utterThis);
+    }
+
+    // Talk to text
+    function toggleSpeech(){
+        setSpeech(!speech);
+    }
+
+    useEffect(() => {
+        if (!('webkitSpeechRecognition' in window)) {
+            console.log('Spracherkennung wird von Ihrem Browser nicht unterstützt');
+            return;
+        }
+
+        recognitionRef.current = new window.webkitSpeechRecognition();
+        recognitionRef.current.lang = "de-DE";  // Sprache auf Deutsch setzen
+
+        recognitionRef.current.onresult = (event) => {
+            setSendMessage(event.results[0][0].transcript);
+        };
+
+        recognitionRef.current.onerror = (event) => {
+            console.log('Fehler bei der Spracherkennung:', event.error);
+        };
+
+    }, []);
+
+    useEffect(() => {
+        if(recognitionRef.current === null){
+          return ;
+        }
+        if (speech) {
+            recognitionRef.current.start();  // die Spracherkennung starten
+        } else {
+            recognitionRef.current.stop();  // die Spracherkennung stoppen
+        }
+    }, [speech]);
+
+    function changeTextSize(event){
+        setFontSize(event.target.value);
+        fetch_messages();
     }
 
     return (
@@ -132,29 +196,46 @@ export default function Chat(props) {
                     <button onClick={toggle_colormode} type="button" className="btn btn-info">Color mode</button>
                     <button onClick={logout} type="button" className="btn btn-warnign">Logout</button>
                     <button onClick={deregister} type="button" className="btn btn-danger">Deregister</button>
-                  </div> 
+
+                  </div>
               </div>
 
-            <div className="d-flex justify-content-center mt-2">
+
+            <div className="d-flex flex-column justify-content-center mt-2">
             <button  onClick={fetch_messages} className="btn btn-primary" type="button">Fetch Messages</button>
+                <label>Schriftgröße ändern</label>
+                <select value={fontSize} onChange={changeTextSize} className="form-select mb-3" aria-label="Default select example">
+                    <option  value={10}>Klein</option>
+                    <option  value={16}>Mittel</option>
+                    <option  value={22}>Groß</option>
+
+                </select>
             </div>
 
-            <div className="p-2 mt-1" id="messages"  style={{maxHeight:"700px", overflow:"scroll"}}>
+            <div className="p-2 mt-1" id="messages"  style={{maxHeight:"600px", overflow:"scroll"}}>
             {messages?.data?.map((message) => (
                 <div>
                     {message.userhash === sessionStorage.getItem('userhash')&& <div>
                         <label>{message.usernickname}&nbsp;&nbsp;&nbsp;{message.time}</label>
-                         <Alert data-bs-theme={colorMode} data-theme={colorMode} key={message.id} variant="primary">{message.text}
-                             <br />
-                             {message.photoid &&<img id={message.id} src="" alt="pic"/>}
+                         <Alert className="d-flex" data-bs-theme={colorMode} data-theme={colorMode} key={message.id} variant="primary">
+                             <div  style={{ flexGrow: 1 }}>
+                                 {message.text}
+                                 <br />
+                                 {message.photoid && <img id={message.id} src="" alt="pic"/>}
+                             </div>
+                             <button style={{ alignSelf: 'center' }} onClick={() =>  textToSpeech(message.text)} className="btn btn-primary" type="button">lol</button>
                          </Alert>
                     </div>}
                     {message.userhash !== sessionStorage.getItem('userhash')&&  <div>
-                        <label>{message.usernickname}&nbsp;&nbsp;&nbsp;{message.time}</label>
-                        <Alert data-bs-theme={colorMode} data-theme={colorMode} key={message.id} variant="secondary">{message.text}
-                            <br />
-                            {message.photoid && <img id={message.id} src="" alt="pic"/>}
-                        </Alert>
+                            <label>{message.usernickname}&nbsp;&nbsp;&nbsp;{message.time}</label>
+                            <Alert className="d-flex" data-bs-theme={colorMode} data-theme={colorMode} key={message.id} variant="secondary">
+                                <div  style={{ flexGrow: 1 }}>
+                                    <p style={{ fontSize: `${fontSize}px` }}> {message.text}</p>
+                                    <br />
+                                    {message.photoid && <img id={message.id} src="" alt="pic"/>}
+                                </div>
+                                <button style={{ alignSelf: 'center' }} onClick={() =>  textToSpeech(message.text)} className="btn btn-primary" type="button">lol</button>
+                            </Alert>
                     </div>}
 
 
@@ -165,7 +246,7 @@ export default function Chat(props) {
 
                 <div id="chat"></div>
                 <form  style={{position:"absolute",bottom:0}} className="p-2 w-100">
-                    <div className="input-group mb-3">
+                    <div className="input-group mb-1">
                         <button onClick={navigateCamera} className="btn btn-primary" type="button">Pic</button>
                         <input type="text"
                            className="form-control"
@@ -175,7 +256,9 @@ export default function Chat(props) {
                            onChange={handleChangeMessage}
                         />
                         <div className="input-group-append">
+                            <button onClick={toggleSpeech} type="button" className="btn btn-danger">Mic</button>
                             <button onClick={sendMessageToGroup} className="btn btn-primary" type="button">Send</button>
+                            <button onClick={textToSpeech} className="btn btn-primary" type="button">text</button>
                         </div>
                     </div>
                 </form>
