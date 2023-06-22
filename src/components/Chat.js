@@ -36,17 +36,15 @@ export default function Chat(props) {
         //const userString = localStorage.getItem('user');
         //const userParsed = JSON.parse(userString);
         //setUser((prevState) => ({...prevState,userid:userParsed.userid}));
-
         fetch_messages();
 
     },[]);
 
     function fetch_messages(){
-        ChatService.fetch_messages(sessionStorage.getItem("token")).then((response)=>{
-            console.log(response);
-            const messagesWithPic = response.data.messages.map(async (msg) => {
+        ChatService.fetch_messages(sessionStorage.getItem("token")).then(res => res.json().then((response) =>{
+            console.log(response)
+            const messagesWithPic = response.messages.map(async (msg) => {
                 if(msg.time) {
-                    console.log(msg.time)
                     let date = msg.time.split('_')
                     date[1] = date[1].replaceAll('-', ':')
                     msg.time = date[0] + ' ' + date[1]
@@ -59,16 +57,12 @@ export default function Chat(props) {
                     else {
                         msg.time = dayjs(msg.time).format('DD.MM.YYYY hh:mm a')
                     }
-
-                    console.log(msg)
                 }
                 if (msg.photoid) {
 
                     const res = await ChatService.fetch_photo(sessionStorage.getItem("token"), msg.photoid)
                     // Bekomme blob und nehme davon die url
-                    console.log(res);
                     const blobUrl = URL.createObjectURL(res.data);
-                    console.log(blobUrl);
                     document.getElementById(msg.id).src = blobUrl;
 
                     let img = document.getElementById(msg.id);
@@ -77,12 +71,13 @@ export default function Chat(props) {
                 }
                 messageEnd?.current?.scrollIntoView({ behavior: 'smooth' });
             })
-            setMessages((prevState) => ({...prevState,data:response.data.messages}));
+            setMessages((prevState) => ({...prevState,data:response.messages}));
 
             //setMessages(response.data.messages);
-        }).catch((error) => {
-            console.log(error)
         })
+        .catch((error) => {
+            console.log(error)
+        }));
 
     }
 
