@@ -3,6 +3,9 @@ import {useNavigate} from "react-router-dom";
 import { useRef } from 'react';
 import ChatService from "../services/chat.service"
 import Alert from 'react-bootstrap/Alert';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import dayjs from 'dayjs';
 import {format} from "date-fns";
 
@@ -194,6 +197,20 @@ export default function Chat(props) {
                   <h1>Chatname</h1>
                   <div>
                     <button onClick={toggle_colormode} type="button" className="btn btn-info">Color mode</button>
+                    <DropdownButton
+                        as={ButtonGroup}
+                        key="test"
+                        
+                        title="test"
+                    >
+                        <Dropdown.Item eventKey="1">Action</Dropdown.Item>
+                        <Dropdown.Item eventKey="2">Another action</Dropdown.Item>
+                        <Dropdown.Item eventKey="3" active>
+                        Active Item
+                        </Dropdown.Item>
+                        <Dropdown.Divider />
+                        <Dropdown.Item eventKey="4">Separated link</Dropdown.Item>
+                    </DropdownButton>
                     <button onClick={logout} type="button" className="btn btn-warnign">Logout</button>
                     <button onClick={deregister} type="button" className="btn btn-danger">Deregister</button>
 
