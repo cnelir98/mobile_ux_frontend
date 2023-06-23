@@ -14,6 +14,14 @@ function App() {
       navigator.serviceWorker.register(`${process.env.PUBLIC_URL}/service-worker.js`).then(
         registration => {
           console.log('Service worker registration succeeded:', registration);
+          if (window.caches) {
+            caches.open('chatSWB-v1.0').then(cache => {
+            cache.addAll([
+            'index.html',
+            'script.js',
+            'styles.css']);
+            });
+           }
         },
         /*catch*/ error => {
           console.error(`Service worker registration failed: ${error}`);

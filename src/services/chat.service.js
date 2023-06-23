@@ -72,12 +72,12 @@ class ChatService {
 
 
     fetch_messages(token){
-        const response = fetch(API_URL, {
-            method: "POST",
+        const response = fetch(API_URL + `?request=fetchmessages&token=${token}`, {
+            method: "GET",
             headers: {
                 "Content-Type": "application/json"
-            },
-            body: JSON.stringify({request:"fetchmessages",token:token})
+            }
+            //body: JSON.stringify({request:"fetchmessages",token:token})
         });
         return response;
         //return axios.post(API_URL, {request:"fetchmessages",token:token})

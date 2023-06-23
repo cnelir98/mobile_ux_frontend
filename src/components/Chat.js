@@ -42,7 +42,7 @@ export default function Chat(props) {
 
     function fetch_messages(){
         ChatService.fetch_messages(sessionStorage.getItem("token")).then(res => res.json().then((response) =>{
-            console.log(response)
+            console.log(response);
             const messagesWithPic = response.messages.map(async (msg) => {
                 if(msg.time) {
                     let date = msg.time.split('_')
