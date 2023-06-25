@@ -203,7 +203,6 @@ export default function Chat(props) {
 
             <nav className="navbar navbar-dark bg-primary">
                 <button onClick={logout} type="button" className="btn btn-warnign"> <Icon.ArrowBarLeft size={30} /></button>
-                <div className="d-flex flex-row">
 
                     <div>
                         <label>Schriftgröße ändern</label>
@@ -219,7 +218,6 @@ export default function Chat(props) {
 
                     </button>
                     <button style={{backgroundColor:'transparent',border: 'none', boxShadow: 'none'}} onClick={deregister} type="button" className="btn btn-danger"> <Icon.TrashFill color="red" size={30} /></button>
-                </div>
             </nav>
 
 
@@ -239,8 +237,7 @@ export default function Chat(props) {
                         <label>{message.usernickname}&nbsp;&nbsp;&nbsp;{message.time}</label>
                          <Alert className="d-flex" data-bs-theme={colorMode} data-theme={colorMode} key={message.id} variant="primary">
                              <div  style={{ flexGrow: 1 }}>
-                                 {message.text}
-                                 <br />
+                                 <p style={{ fontSize: `${fontSize}px` }}> {message.text}</p>                                 <br />
                                  {message.photoid && <img id={message.id} src="" alt="pic"/>}
                              </div>
                              <button style={{ alignSelf: 'center' }} onClick={() =>  textToSpeech(message.text)} className="btn btn-primary" type="button"><Icon.VolumeUp/></button>
@@ -276,7 +273,8 @@ export default function Chat(props) {
                            onChange={handleChangeMessage}
                         />
                         <div className="input-group-append">
-                            <button onClick={toggleSpeech} type="button" className="btn btn-primary"><Icon.MicFill/></button>
+                            {!speech && <button onClick={toggleSpeech} type="button" className="btn btn-primary"><Icon.MicFill/></button>}
+                            {speech && <button onClick={toggleSpeech} type="button" className="btn btn-danger"><Icon.MicFill/></button>}
                             <button onClick={sendMessageToGroup} className="btn btn-primary" type="button"><Icon.SendFill/></button>
                         </div>
                     </div>
